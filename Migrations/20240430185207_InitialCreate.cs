@@ -16,7 +16,8 @@ namespace ContactBook.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ContactName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     HomePhone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MobilePhone = table.Column<string>(type: "nvarchar(max)", nullable: false),

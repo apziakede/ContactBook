@@ -1,5 +1,8 @@
 using ContactBook.Configurations;
 using ContactBook.Data;
+using DbUp;
+using DbUp.Engine;
+using DbUp.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +27,34 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+void TableMigrationScript()
+{
+    string? conStr = builder.Configuration.GetConnectionString("DefaultConnection");
+    EnsureDatabase.For.SqlDatabase(conStr);
+    var upgrader = DeployChanges.To.SqlDatabase(conStr)
+        .WithScriptsFromFileSystem(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SqlScripts", "SqlTables"))
+        .WithTransactionPerScript()
+       .JournalTo(new NullJournal()) 
+        .LogToConsole()
+        .Build();
+    upgrader.PerformUpgrade();
+}
+
+void StoredProcMigrationScript()
+{
+    string? conStr = builder.Configuration.GetConnectionString("DefaultConnection");
+    EnsureDatabase.For.SqlDatabase(conStr);
+    var upgrader = DeployChanges.To.SqlDatabase(conStr)
+        .WithScriptsFromFileSystem(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SqlScripts", "SqlProcs"))
+        .WithTransactionPerScript()
+      .JournalTo(new NullJournal()) 
+        .LogToConsole()
+        .Build();
+    upgrader.PerformUpgrade();
+}
+TableMigrationScript();
+StoredProcMigrationScript();
 
 app.UseHttpsRedirection();
 
